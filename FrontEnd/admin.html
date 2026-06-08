@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrador — Ateliê Verdanza</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f5f0e8;
+      --warm-white: #faf7f2;
+      --dark-green: #1e2c1a;
+      --mid-green: #3a5435;
+      --light-green: #6b8f5e;
+      --text-dark: #2a2a22;
+      --text-mid: #5a5a4a;
+      --text-light: #8a8a7a;
+      --border: #d8d0c0;
+      --sidebar-w: 192px;
+      --topbar-h: 56px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--warm-white);
+      color: var(--text-dark);
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--warm-white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 200;
+    }
+
+    .topbar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text-dark);
+      text-decoration: none;
+    }
+
+    .topbar-actions { display: flex; align-items: center; gap: 14px; }
+
+    .topbar-icon {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-mid); display: flex; align-items: center;
+      transition: color .2s;
+    }
+    .topbar-icon:hover { color: var(--dark-green); }
+
+    /* ── SHELL ── */
+    .shell {
+      display: flex;
+      flex: 1;
+      padding-top: var(--topbar-h);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: fixed;
+      top: var(--topbar-h);
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--warm-white);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 12px;
+      z-index: 100;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      color: var(--text-mid);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .18s, color .18s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover { background: var(--cream); color: var(--text-dark); }
+
+    .nav-item.active {
+      background: var(--dark-green);
+      color: #fff;
+    }
+
+    .nav-item svg { flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-logout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #c0392b;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      transition: background .18s;
+    }
+
+    .sidebar-logout:hover { background: #fdf0ee; }
+
+    /* ── CONTENT ── */
+    .content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 36px 64px;
+      min-height: calc(100vh - var(--topbar-h));
+    }
+
+    /* sections toggle */
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--text-dark);
+    }
+    .page-header p { font-size: 0.82rem; color: var(--text-light); }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 28px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      color: var(--text-dark);
+    }
+
+    .card-title svg { color: var(--light-green); }
+
+    /* ── FORM ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 32px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.span2 { grid-column: 1 / -1; }
+
+    label.field-label {
+      font-size: 0.72rem;
+      color: var(--text-mid);
+      letter-spacing: 0.04em;
+      text-transform: none;
+    }
+
+    .field-input {
+      border: none;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 0;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--text-dark);
+      background: transparent;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .field-input:focus { border-bottom-color: var(--dark-green); }
+    .field-input::placeholder { color: var(--border); }
+
+    textarea.field-input {
+      resize: vertical;
+      min-height: 68px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+
+    textarea.field-input:focus { border-color: var(--dark-green); }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+
+    .upload-zone:hover { border-color: var(--light-green); background: #f8faf7; }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    .upload-zone svg { color: var(--text-light); margin-bottom: 10px; }
+    .upload-zone p { font-size: 0.8rem; color: var(--text-mid); }
+    .upload-zone p a { color: var(--dark-green); text-decoration: underline; }
+    .upload-zone small { font-size: 0.7rem; color: var(--text-light); }
+    .upload-preview { max-width: 100%; max-height: 120px; border-radius: 6px; margin-bottom: 8px; display: none; }
+
+    /* Save btn */
+    .btn-save {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px;
+      background: var(--dark-green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s, transform .15s;
+    }
+    .btn-save:hover { background: var(--mid-green); }
+    .btn-save:active { transform: scale(.98); }
+
+    /* ── CATALOG TABLE + ORDERS GRID ── */
+    .catalog-table-wrapper {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .catalog-table-wrapper table {
+      width: 100%;
+    }
+
+    .catalog-table-wrapper thead th {
+      padding: 16px 16px 14px;
+    }
+
+    .catalog-table-wrapper td {
+      padding: 16px;
+    }
+    .catalog-orders-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Table */
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .table-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+
+    .table-filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.75rem;
+      color: var(--text-mid);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color .2s;
+    }
+    .table-filter-btn:hover { border-color: var(--dark-green); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      padding: 16px 16px 14px;
+      font-weight: 400;
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th:first-child { padding-left: 0; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--warm-white); }
+
+    td {
+      padding: 16px;
+      vertical-align: middle;
+      color: var(--text-dark);
+    }
+
+    td:first-child { padding-left: 0; }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .product-thumb {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--cream);
+    }
+
+    .product-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .product-cell-info .name { font-size: 0.84rem; font-weight: 400; }
+    .product-cell-info .sub  { font-size: 0.72rem; color: var(--text-light); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 400;
+    }
+
+    .badge-green  { background: #e8f5e9; color: #2e7d32; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+    .badge-red    { background: #fdecea; color: #c0392b; }
+
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor;
+    }
+
+    .action-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-light); padding: 4px;
+      border-radius: 4px; transition: color .2s, background .2s;
+      display: inline-flex; align-items: center;
+    }
+    .action-btn:hover { color: var(--dark-green); background: var(--cream); }
+
+    .action-btn.del:hover { color: #c0392b; background: #fdecea; }
+
+    /* ── ORDERS ── */
+    .orders-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 14px;
+    }
+
+    .order-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: #fff;
+      position: relative;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .order-id   { font-size: 0.82rem; font-weight: 500; color: var(--text-dark); }
+    .order-name { font-size: 0.78rem; color: var(--text-mid); margin-top: 2px; }
+
+    .order-menu-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-light); padding: 2px 4px; border-radius: 4px;
+      transition: color .2s;
+    }
+    .order-menu-btn:hover { color: var(--text-dark); }
+
+    .order-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .order-meta { font-size: 0.74rem; color: var(--text-light); }
+
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .status-pendente  { background: #fff8e1; color: #f57f17; }
+    .status-enviado   { background: #e3f2fd; color: #1565c0; }
+    .status-entregue  { background: #e8f5e9; color: #2e7d32; }
+
+    .btn-ver-pedidos {
+      width: 100%;
+      padding: 11px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      margin-top: 4px;
+    }
+    .btn-ver-pedidos:hover { border-color: var(--dark-green); color: var(--dark-green); }
+
+    /* ── PEDIDOS PANEL ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 20px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+
+    .orders-table-wrapper {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .orders-table-wrapper table { width: 100%; }
+    .orders-table-wrapper thead th { padding: 16x 16px 14px; }
+    .orders-table-wrapper td { padding: 16px; }
+
+    /* ── CLIENTES PANEL ── */
+    .clients-table-wrapper {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .clients-table-wrapper table {
+      width: 100%;
+    }
+
+    .clients-table-wrapper thead th {
+      padding: 16px 16px 14px;
+    }
+
+    .clients-table-wrapper td {
+      padding: 16px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--warm-white);
+      border-top: 1px solid var(--border);
+      padding: 40px 48px 16px;
+      margin-left: var(--sidebar-w);
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .footer-brand h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .footer-brand p { font-size: 0.77rem; color: var(--text-light); line-height: 1.7; }
+
+    .footer-col h4 {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .footer-col ul li a {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-col ul li a:hover { color: var(--text-dark); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      text-align: center;
+    }
+
+    .footer-bottom p { font-size: 0.7rem; color: var(--text-light); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: var(--dark-green);
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s ease;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(30,44,26,0.35);
+      z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 420px;
+      width: 90%;
+      transform: translateY(16px);
+      transition: transform .25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+
+    .modal p { font-size: 0.82rem; color: var(--text-mid); margin-bottom: 20px; }
+
+    .modal-btns { display: flex; gap: 10px; }
+
+    .modal-btns button {
+      flex: 1; padding: 10px;
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-cancel {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-mid);
+    }
+    .btn-cancel:hover { border-color: var(--text-mid); }
+
+    .btn-confirm-del {
+      background: #c0392b;
+      border: none;
+      color: #fff;
+    }
+    .btn-confirm-del:hover { background: #a93226; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeUp 0.55s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .catalog-orders-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; padding: 24px 16px 48px; }
+      footer { margin-left: 0; padding: 32px 16px 14px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a href="index.html" class="topbar-logo">Ateliê Verdanza</a>
+  <div class="topbar-actions">
+    <button class="topbar-icon" title="Pesquisar">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+    <button class="topbar-icon" title="Conta">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('produtos')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Produtos
+      </button>
+      <button class="nav-item" onclick="showSection('pedidos')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Pedidos
+      </button>
+      <button class="nav-item" onclick="showSection('clientes')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clientes
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-logout" onclick="if(confirm('Deseja sair?')) window.location.href='login.html'">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- ══ PRODUTOS ══ -->
+    <div class="section-panel active fade-in" id="panel-produtos">
+      <div class="page-header">
+        <h1>Painel Administrativo</h1>
+        <p>Gerencie seu catálogo botânico e acompanhe o fluxo de pedidos.</p>
+      </div>
+
+      <!-- Cadastrar Produto -->
+      <div class="card">
+        <p class="card-title">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Cadastrar Novo Produto
+        </p>
+
+        <div class="form-grid">
+          <!-- Left -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="form-group">
+              <label class="field-label">Nome da Planta</label>
+              <input class="field-input" type="text" id="prod-nome" placeholder="Ex: Costela de Adão" />
+            </div>
+            <div class="form-group">
+              <label class="field-label">Descrição Curta</label>
+              <textarea class="field-input" id="prod-desc" placeholder="Descreva as características e cuidados…"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Preço de Venda (R$)</label>
+              <input class="field-input" type="number" id="prod-preco" placeholder="0,00" min="0" step="0.01" />
+            </div>
+            <div class="form-group">
+              <label class="field-label">Categoria</label>
+              <select class="field-input" id="prod-cat">
+                <option value="Plantas">Plantas</option>
+                <option value="Flores">Flores</option>
+                <option value="Vasos">Vasos</option>
+                <option value="Acessórios">Acessórios</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Right -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="form-group" style="flex:1;">
+              <label class="field-label">Imagem do Produto</label>
+              <div class="upload-zone" id="upload-zone">
+                <input type="file" accept="image/*" onchange="previewImage(event)" />
+                <img class="upload-preview" id="upload-preview" alt="Preview" />
+                <svg id="upload-icon" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                <p id="upload-text">Arraste uma foto ou <a>clique para upload</a></p>
+                <small>Formatos aceitos: JPG, PNG (máx. 5MB)</small>
+              </div>
+            </div>
+            <button class="btn-save" onclick="saveProduct()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Salvar Produto
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Catálogo + Pedidos Recentes -->
+      <div class="catalog-orders-grid">
+        <!-- Catálogo -->
+        <div>
+          <div class="table-header">
+            <span class="table-title">Catálogo Ativo</span>
+            <button class="table-filter-btn">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Filtrar
+            </button>
+          </div>
+            <div class="catalog-table-wrapper">
+              <table id="catalog-table">
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th>Status</th>
+                  <th>Preço</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-tbody">
+                <!-- rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pedidos Recentes -->
+        <div>
+          <p class="orders-title">Pedidos Recentes</p>
+          <div id="recent-orders-list">
+            <!-- rendered by JS -->
+          </div>
+          <button class="btn-ver-pedidos" onclick="showSection('pedidos')">Ver Todos os Pedidos</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PEDIDOS ══ -->
+    <div class="section-panel fade-in" id="panel-pedidos">
+      <div class="page-header">
+        <h1>Pedidos</h1>
+        <p>Acompanhe e gerencie todos os pedidos.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <p class="stat-label">Total de Pedidos</p>
+          <p class="stat-value">42</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Pendentes</p>
+          <p class="stat-value">1</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Receita (mês)</p>
+          <p class="stat-value">R$ 8.240</p>
+        </div>
+      </div>
+
+      <div class="orders-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Itens</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="all-orders-tbody">
+            <!-- rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ CLIENTES ══ -->
+    <div class="section-panel fade-in" id="panel-clientes">
+      <div class="page-header">
+        <h1>Clientes</h1>
+        <p>Visualize e gerencie sua base de clientes.</p>
+      </div>
+
+      <div class="table-header">
+        <span class="table-title">Lista de Clientes</span>
+      </div>
+
+      <div class="clients-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Pedidos</th>
+              <th>Total gasto</th>
+              <th>Última compra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Beatriz Silveira</td>
+              <td>beatriz@email.com</td>
+              <td>4</td>
+              <td>R$ 980,00</td>
+              <td>12/05/2024</td>
+            </tr>
+            <tr>
+              <td>Henrique Costa</td>
+              <td>henrique@email.com</td>
+              <td>2</td>
+              <td>R$ 318,00</td>
+              <td>10/05/2024</td>
+            </tr>
+            <tr>
+              <td>Mariana Luz</td>
+              <td>mariana@email.com</td>
+              <td>6</td>
+              <td>R$ 1.420,00</td>
+              <td>14/05/2024</td>
+            </tr>
+            <tr>
+              <td>Carlos Mendes</td>
+              <td>carlos@email.com</td>
+              <td>1</td>
+              <td>R$ 189,00</td>
+              <td>08/05/2024</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <h3>Ateliê Verdanza</h3>
+        <p>Curadoria botânica para ambientes sofisticados.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Admin</h4>
+      <ul>
+        <li><a href="#">Suporte Técnico</a></li>
+        <li><a href="#">Manual da Marca</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Logística</h4>
+      <ul>
+        <li><a href="#">Transportadoras</a></li>
+        <li><a href="#">Políticas de Devolução</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Segurança</h4>
+      <ul>
+        <li><a href="#">Privacidade</a></li>
+        <li><a href="#">Termos de Uso</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 Ateliê Verdanza. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal">
+    <h3>Remover produto?</h3>
+    <p>Esta ação não pode ser desfeita. O produto será removido do catálogo.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Remover</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ── DATA ── */
+  let products = [
+    {
+      id: 1,
+      name: 'Suculenta',
+      sub: 'Planta ornamental',
+      price: 319.90,
+      status: 'em_estoque',
+      img: 'resources/images/90b89e249c82e6dc5cbd5a1f773eaf8c.jpg'
+    },
+    {
+      id: 2,
+      name: 'Pacova',
+      sub: 'Planta de interior',
+      price: 99.99,
+      status: 'esgotando',
+      img: 'resources/images/8754e248f99b5927f030bced0a93fb36.jpg'
+    },
+    {
+      id: 3,
+      name: 'Begônia maculata',
+      sub: 'Folhagem decorativa',
+      price: 150.00,
+      status: 'em_estoque',
+      img: 'resources/images/f0d31b0b3237e0a5a88f2f86ca38bd6e.jpg'
+    },
+  ];
+
+  const orders = [
+    { id: '#ORD-9022', client: 'Beatriz Silveira', items: 2, total: 'R$ 264,00', status: 'pendente'  },
+    { id: '#ORD-9018', client: 'Henrique Costa',  items: 1, total: 'R$ 89,00',  status: 'enviado'   },
+    { id: '#ORD-8995', client: 'Mariana Luz',     items: 3, total: 'R$ 412,00', status: 'entregue'  },
+    { id: '#ORD-8981', client: 'Carlos Mendes',   items: 1, total: 'R$ 189,00', status: 'entregue'  },
+  ];
+
+  let deleteTarget = null;
+  let nextId = 10;
+
+  /* ── STATUS HELPERS ── */
+  const statusBadge = {
+    em_estoque: '<span class="badge badge-green"><span class="badge-dot"></span>Em estoque</span>',
+    esgotando:  '<span class="badge badge-orange"><span class="badge-dot"></span>Esgotando</span>',
+    esgotado:   '<span class="badge badge-red"><span class="badge-dot"></span>Esgotado</span>',
+  };
+
+  const orderStatusBadge = {
+    pendente: '<span class="status-badge status-pendente">Pendente ˅</span>',
+    enviado:  '<span class="status-badge status-enviado">Pronto para Retirada ˅</span>',
+    entregue: '<span class="status-badge status-entregue">Entregue</span>',
+  };
+
+  /* ── RENDER CATALOG ── */
+  function renderCatalog() {
+    const tbody = document.getElementById('catalog-tbody');
+    if (products.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-light);font-size:.82rem;">Nenhum produto cadastrado.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = products.map(p => `
+      <tr>
+        <td>
+          <div class="product-cell">
+            <div class="product-thumb">
+              <img src="${p.img}" alt="${p.name}" />
+            </div>
+            <div class="product-cell-info">
+              <p class="name">${p.name}</p>
+              <p class="sub">${p.sub}</p>
+            </div>
+          </div>
+        </td>
+        <td>${statusBadge[p.status] || ''}</td>
+        <td style="white-space:nowrap;">R$ ${p.price.toFixed(2).replace('.', ',')}</td>
+        <td>
+          <button class="action-btn" title="Editar" onclick="editProduct(${p.id})">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="action-btn del" title="Remover" onclick="askDelete(${p.id})">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  /* ── RENDER RECENT ORDERS ── */
+  function renderRecentOrders() {
+    const el = document.getElementById('recent-orders-list');
+    el.innerHTML = orders.slice(0, 3).map(o => `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <p class="order-id">${o.id}</p>
+            <p class="order-name">${o.client}</p>
+          </div>
+          <button class="order-menu-btn">⋯</button>
+        </div>
+        <div class="order-bottom">
+          <span class="order-meta">${o.items} ${o.items === 1 ? 'Item' : 'Itens'} • ${o.total}</span>
+          ${orderStatusBadge[o.status]}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ── RENDER ALL ORDERS ── */
+  function renderAllOrders() {
+    const tbody = document.getElementById('all-orders-tbody');
+    tbody.innerHTML = orders.map(o => `
+      <tr>
+        <td style="font-weight:400;">${o.id}</td>
+        <td>${o.client}</td>
+        <td>${o.items}</td>
+        <td>${o.total}</td>
+        <td>${orderStatusBadge[o.status]}</td>
+        <td>
+          <button class="action-btn" title="Ver detalhes">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  /* ── SAVE PRODUCT ── */
+  function saveProduct() {
+    const nome  = document.getElementById('prod-nome').value.trim();
+    const desc  = document.getElementById('prod-desc').value.trim();
+    const preco = parseFloat(document.getElementById('prod-preco').value);
+    const cat   = document.getElementById('prod-cat').value;
+
+    if (!nome) { showToast('Informe o nome do produto.'); return; }
+    if (!preco || preco <= 0) { showToast('Informe um preço válido.'); return; }
+
+    const preview = document.getElementById('upload-preview');
+    const img = preview.style.display !== 'none' && preview.src
+      ? preview.src
+      : `https://images.unsplash.com/photo-1512428813834-c702c7702b78?w=80&q=70`;
+
+    products.push({
+      id: nextId++,
+      name: nome,
+      sub: cat,
+      price: preco,
+      status: 'em_estoque',
+      img
+    });
+
+    // Reset form
+    document.getElementById('prod-nome').value  = '';
+    document.getElementById('prod-desc').value  = '';
+    document.getElementById('prod-preco').value = '';
+    preview.style.display = 'none';
+    preview.src = '';
+    document.getElementById('upload-icon').style.display = '';
+    document.getElementById('upload-text').style.display = '';
+
+    renderCatalog();
+    showToast(`"${nome}" cadastrado com sucesso! ✓`);
+  }
+
+  /* ── EDIT PRODUCT ── */
+  function editProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('prod-nome').value  = p.name;
+    document.getElementById('prod-desc').value  = p.sub;
+    document.getElementById('prod-preco').value = p.price;
+    // scroll to form
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    showToast('Editando produto — faça as alterações e salve.');
+    // remove old entry so save creates updated one
+    products = products.filter(x => x.id !== id);
+  }
+
+  /* ── DELETE ── */
+  function askDelete(id) {
+    deleteTarget = id;
+    document.getElementById('del-modal').classList.add('open');
+  }
+
+  function closeModal() {
+    deleteTarget = null;
+    document.getElementById('del-modal').classList.remove('open');
+  }
+
+  function confirmDelete() {
+    if (deleteTarget === null) return;
+    products = products.filter(p => p.id !== deleteTarget);
+    closeModal();
+    renderCatalog();
+    showToast('Produto removido.');
+  }
+
+  /* ── IMAGE PREVIEW ── */
+  function previewImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const prev = document.getElementById('upload-preview');
+      prev.src = ev.target.result;
+      prev.style.display = 'block';
+      document.getElementById('upload-icon').style.display = 'none';
+      document.getElementById('upload-text').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ── SECTION SWITCH ── */
+  function showSection(name) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+    document.getElementById(`panel-${name}`).classList.add('active');
+
+    const map = { produtos: 0, pedidos: 1, clientes: 2 };
+    document.querySelectorAll('.nav-item')[map[name]]?.classList.add('active');
+
+    if (name === 'pedidos')  renderAllOrders();
+  }
+
+  /* ── TOAST ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._tt);
+    window._tt = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ── CLOSE MODAL ON BACKDROP ── */
+  document.getElementById('del-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  /* ── INIT ── */
+  renderCatalog();
+  renderRecentOrders();
+</script>
+</body>
+</html>

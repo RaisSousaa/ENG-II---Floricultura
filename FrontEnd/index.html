@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Ateliê Verdanza</title>
+
+  <!-- Fontes -->
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" 
+    rel="stylesheet" 
+  />
+
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="styles-global.css" />
+
+  <style>
+    /* =========================
+       CONFIGURAÇÃO GERAL
+    ========================= */
+
+    body {
+      background: var(--warm-white);
+      font-family: 'Jost', sans-serif;
+    }
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+    }
+
+    .nav-search input {
+      width: 120px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-mid);
+    }
+
+    .nav-search svg {
+      color: var(--text-light);
+    }
+
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--text-mid);
+      transition: color 0.2s;
+    }
+
+    .nav-icon:hover {
+      color: var(--dark-green);
+    }
+
+    /* =========================
+       HERO DESKTOP
+    ========================= */
+
+    .hero {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 0 80px;
+      background: var(--warm-white);
+      text-align: center;
+    }
+
+    .hero h1 {
+      max-width: none;
+      margin: 0 auto 18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: #000;
+      white-space: nowrap;
+    }
+
+    .hero img {
+      width: 100%;
+      height: 740px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      border-radius: 16px;
+    }
+    /* =========================
+       SEÇÕES
+    ========================= */
+
+    .section {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 80px 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 48px;
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--text-dark);
+    }
+
+    .section-subtitle {
+      max-width: 460px;
+      margin-top: 4px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-light);
+    }
+
+    /* =========================
+       GRID DE PRODUTOS
+    ========================= */
+
+    .section {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 80px 0;
+    }
+
+    .products-carousel {
+      display: grid;
+      grid-template-columns: 1fr 52px;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .product-card-img {
+      aspect-ratio: 4 / 5;
+    }
+
+    .carousel-arrow {
+      width: 52px;
+      height: 52px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--warm-white);
+      color: var(--dark-green);
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .carousel-arrow:hover {
+      background: var(--dark-green);
+      color: #fff;
+      border-color: var(--dark-green);
+    }
+
+    .product-card {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .product-card-img {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--cream);
+    }
+
+    .product-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-card-img img {
+      transform: scale(1.04);
+    }
+
+    .add-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: var(--dark-green);
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .add-btn:hover {
+      background: var(--mid-green);
+      transform: scale(1.1);
+    }
+
+    .product-info {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .product-name {
+      font-size: 1.08rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .product-price {
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--text-mid);
+      white-space: nowrap;
+    }
+
+    /* =========================
+       DIVISOR
+    ========================= */
+
+    .divider {
+      max-width: 1480px;
+      margin: 0 auto;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* =========================
+       BANNER INSTITUCIONAL
+    ========================= */
+
+    .brand-banner {
+      max-width: 1180px;
+      min-height: 440px;
+      margin: 40px auto 0;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .brand-banner-img {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-banner-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand-overlay-card {
+      position: absolute;
+      bottom: 32px;
+      left: 32px;
+      max-width: 260px;
+      padding: 24px 28px;
+      border-radius: 10px;
+      background: var(--warm-white);
+    }
+
+    .brand-overlay-card h4 {
+      margin-bottom: 6px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .brand-overlay-card p {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text-light);
+    }
+
+    .brand-banner-content {
+      padding: 72px;
+      background: var(--cream);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      margin-bottom: 14px;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--light-green);
+    }
+
+    .brand-banner-content h2 {
+      margin-bottom: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--text-dark);
+    }
+
+    .brand-banner-content p {
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text-mid);
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feature-item h5 {
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--dark-green);
+    }
+
+    .feature-item h5::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--light-green);
+      display: inline-block;
+    }
+
+    .feature-item p {
+      margin-bottom: 0;
+      padding-left: 14px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      margin-top: 80px;
+      padding: 56px 0 28px;
+      background: var(--warm-white);
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-top,
+    .footer-bottom {
+      max-width: 1180px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand h3 {
+      margin-bottom: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .footer-brand p {
+      max-width: 280px;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--text-light);
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .footer-socials a {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-mid);
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .footer-socials a:hover {
+      background: var(--dark-green);
+      color: #fff;
+      border-color: var(--dark-green);
+    }
+
+    .footer-col h4 {
+      margin-bottom: 14px;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-col ul li a {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--text-dark);
+    }
+
+    .footer-col address {
+      font-style: normal;
+      font-size: 0.78rem;
+      line-height: 1.8;
+      color: var(--text-light);
+    }
+
+    .footer-bottom {
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-bottom p {
+      font-size: 0.72rem;
+      color: var(--text-light);
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-bottom-links a {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-bottom-links a:hover {
+      color: var(--text-dark);
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast {
+      position: fixed;
+      right: 32px;
+      bottom: 32px;
+      z-index: 999;
+      padding: 12px 20px;
+      border-radius: 6px;
+      background: var(--dark-green);
+      color: #fff;
+      font-size: 0.82rem;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: all 0.35s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================
+       ANIMAÇÕES
+    ========================= */
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .delay-1 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+      animation-delay: 0.22s;
+    }
+
+    .delay-3 {
+      animation-delay: 0.34s;
+    }
+
+    /* =========================
+       RESPONSIVO
+    ========================= */
+
+    @media (max-width: 900px) {
+      nav {
+        padding: 0 24px;
+      }
+
+      .nav-search {
+        display: none;
+      }
+
+      .hero {
+        height: 440px;
+        margin: 20px 20px 0;
+        border-radius: 12px;
+      }
+
+      .hero h1 {
+        left: 28px;
+        right: 28px;
+        bottom: 36px;
+        font-size: 2.7rem;
+      }
+
+      .section {
+        padding: 56px 20px;
+      }
+
+      .section-header {
+        display: block;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .brand-banner {
+        margin: 20px;
+        grid-template-columns: 1fr;
+      }
+
+      .brand-banner-content {
+        padding: 40px 28px;
+      }
+
+      footer {
+        padding: 40px 0 20px;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 0 24px;
+      }
+
+      .footer-bottom {
+        padding: 20px 24px 0;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav></nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1 class="fade-up">
+      Traga a beleza da natureza para dentro do seu lar
+    </h1>
+
+    <img 
+      src="resources/images/capa.jpg"
+      alt="Plantas na prateleira" 
+    />
+  </section>
+
+  <!-- COLEÇÃO PARA VOCÊ -->
+<section class="section">
+  <div class="section-header fade-up delay-1">
+    <h2 class="section-title">Coleção de plantas para você</h2>
+  </div>
+
+  <div class="products-carousel">
+    <div class="product-grid">
+
+      <div class="product-card" onclick="openProduct(4)">
+        <div class="product-card-img">
+          <img src="resources/images/90b89e249c82e6dc5cbd5a1f773eaf8c.jpg" alt="Suculenta" />
+          <button class="add-btn" onclick="addToCart(event, 'Suculenta')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Suculenta</span>
+          <span class="product-price">R$ 319,90</span>
+        </div>
+      </div>
+
+      <div class="product-card" onclick="openProduct(1)">
+        <div class="product-card-img">
+          <img src="resources/images/8754e248f99b5927f030bced0a93fb36.jpg" alt="Costela de Adão no Vaso" />
+          <button class="add-btn" onclick="addToCart(event, 'Pacova')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Pacova</span>
+          <span class="product-price">R$ 99,99</span>
+        </div>
+      </div>
+
+      <div class="product-card" onclick="openProduct(3)">
+        <div class="product-card-img">
+          <img src="resources/images/f0d31b0b3237e0a5a88f2f86ca38bd6e.jpg" alt="Begônia maculata" />
+          <button class="add-btn" onclick="addToCart(event, 'Begônia maculata')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Begônia maculata</span>
+          <span class="product-price">R$ 150,00</span>
+        </div>
+      </div>
+
+      <div class="product-card" onclick="openProduct(2)">
+        <div class="product-card-img">
+          <img src="resources/images/d4354dd73462954ef4c1cdf9c8e30fc1.jpg" alt="Arranjo floral delicado" />
+          <button class="add-btn" onclick="addToCart(event, 'filodendro coração')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">filodendro coração</span>
+          <span class="product-price">R$ 85,00</span>
+        </div>
+      </div>
+
+      <div class="product-card" onclick="openProduct(5)">
+        <div class="product-card-img">
+          <img src="resources/images/3968616e5c964b6cc39dd69bde188030.jpg" alt="Arranjo floral especial" />
+          <button class="add-btn" onclick="addToCart(event, 'Samambaia')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Samambaia</span>
+          <span class="product-price">R$ 200,00</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="carousel-arrow" type="button">
+      ›
+    </button>
+  </div>
+</section>
+
+  <hr class="divider" />
+
+ <!-- COLEÇÃO DE ARRANJOS -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Coleção de arranjos para você</h2>
+  </div>
+
+  <div class="products-carousel">
+    <div class="product-grid">
+
+      <div class="product-card fade-up delay-1">
+        <div class="product-card-img">
+          <img src="resources/images/arranjo1.jpg" alt="Arranjo floral" />
+          <button class="add-btn" onclick="addToCart('Arranjo floral')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Arranjo floral</span>
+          <span class="product-price">R$ 150,00</span>
+        </div>
+      </div>
+
+      <div class="product-card fade-up delay-2">
+        <div class="product-card-img">
+          <img src="resources/images/arranjo2.jpg" alt="Arranjo floral" />
+          <button class="add-btn" onclick="addToCart('Arranjo floral')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Arranjo floral</span>
+          <span class="product-price">R$ 200,00</span>
+        </div>
+      </div>
+
+      <div class="product-card fade-up delay-3">
+        <div class="product-card-img">
+          <img src="resources/images/arranjo3.jpg" alt="Arranjo floral" />
+          <button class="add-btn" onclick="addToCart('Arranjo floral')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Arranjo floral</span>
+          <span class="product-price">R$ 50,00</span>
+        </div>
+      </div>
+
+      <div class="product-card fade-up delay-1">
+        <div class="product-card-img">
+          <img src="resources/images/c2d8170ae288ab2c850477e66be1a755.jpg" alt="Arranjo floral" />
+          <button class="add-btn" onclick="addToCart('Arranjo floral')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Arranjo floral</span>
+          <span class="product-price">R$ 120,00</span>
+        </div>
+      </div>
+
+      <div class="product-card fade-up delay-2">
+        <div class="product-card-img">
+          <img src="resources/images/e35b38f27e82e78c62aca35e0fc73204.jpg" alt="Arranjo floral" />
+          <button class="add-btn" onclick="addToCart('Arranjo floral')">+</button>
+        </div>
+
+        <div class="product-info">
+          <span class="product-name">Arranjo floral</span>
+          <span class="product-price">R$ 250,00</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="carousel-arrow" type="button">
+      ›
+    </button>
+  </div>
+</section>
+
+  <!-- BRAND BANNER -->
+  <section class="brand-banner">
+    <div class="brand-banner-img">
+      <img 
+        src="resources/images/ea1cc21338214fcb7777857ad06167d6.jpg" 
+        alt="Cuidado sustentável com plantas" 
+      />
+
+      <div class="brand-overlay-card">
+        <h4>Cuidado Sustentável</h4>
+
+        <p>
+          Suas plantas crescem mais fortes utilizando técnicas orgânicas e a gestão consciente da água.
+        </p>
+      </div>
+    </div>
+
+    <div class="brand-banner-content">
+      <p class="eyebrow">O caminho Verdanza</p>
+
+      <h2>Respeitando os ritmos da natureza</h2>
+
+      <p>
+        Acreditamos que trazer a natureza para dentro de casa deve ser um ato de atenção plena. 
+        Nossas plantas são preparadas com cuidado para garantir beleza, saúde e durabilidade.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <h5>Totalmente artesanal</h5>
+
+          <p>
+            Plantas especiais cultivadas com processos cuidadosos e compromisso com a biodiversidade.
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <h5>Consultor especializado</h5>
+
+          <p>
+            Cada planta é selecionada com atenção para combinar beleza, cuidado e qualidade.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer></footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- COMPONENTES GLOBAIS -->
+  <script src="components.js"></script>
+
+  <script>
+    function openProduct(id) {
+      window.location.href = `produto.html?id=${id}`;
+    }
+
+    function addToCart(event, name) {
+      event.stopPropagation();
+      const toast = document.getElementById('toast');
+
+      toast.textContent = `"${name}" adicionado ao carrinho`;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.product-card, .section-header').forEach((element) => {
+      element.style.opacity = '0';
+      element.style.animation = 'fadeUp 0.55s ease forwards paused';
+      observer.observe(element);
+    });
+  </script>
+
+</body>
+</html>

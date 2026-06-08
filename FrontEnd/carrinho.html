@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho — Ateliê Verdanza</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles-global.css" />
+  <style>
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--warm-white);
+      color: var(--text-dark);
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      flex: 1;
+      padding: 48px 48px 64px;
+    }
+
+    h1.page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 36px;
+    }
+
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── CART ITEMS ── */
+    .cart-items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cart-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .cart-item:nth-child(2) { animation-delay: 0.1s; }
+
+    .cart-item-img {
+      width: 88px;
+      height: 88px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--cream);
+    }
+
+    .cart-item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .cart-item-category {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .cart-item-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 14px;
+    }
+
+    .cart-item-price {
+      font-size: 0.92rem;
+      font-weight: 400;
+      color: var(--text-dark);
+    }
+
+    /* Qty controls */
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+    }
+
+    .qty-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-mid);
+      font-size: 1rem;
+      line-height: 1;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+      padding: 0;
+    }
+
+    .qty-btn:hover { color: var(--dark-green); }
+    .qty-btn:disabled { color: var(--border); cursor: not-allowed; }
+
+    .qty-value {
+      font-size: 0.85rem;
+      min-width: 14px;
+      text-align: center;
+      color: var(--text-dark);
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .remove-btn:hover { color: #c0392b; }
+
+    /* ── RECOMMENDED ── */
+    .recommended {
+      margin-top: 40px;
+    }
+
+    .recommended h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .rec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 190px);
+      gap: 20px;
+    }
+
+    .rec-card {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .rec-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .rec-card-img {
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      background: var(--cream);
+      margin-bottom: 10px;
+    }
+
+    .rec-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .rec-card:hover .rec-card-img img { transform: scale(1.05); }
+
+    .rec-card-name {
+      font-size: 0.82rem;
+      color: var(--text-dark);
+      margin-bottom: 3px;
+    }
+
+    .rec-card-price {
+      font-size: 0.78rem;
+      color: var(--text-light);
+    }
+
+    /* ── SUMMARY SIDEBAR ── */
+    .summary-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .summary-box {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 24px;
+    }
+
+    .summary-box h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-bottom: 24px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.83rem;
+      color: var(--text-mid);
+      margin-bottom: 10px;
+    }
+
+    .summary-row.discount { color: var(--light-green); }
+
+    .summary-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .summary-total span:first-child {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+    }
+
+    .summary-total span:last-child {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    /* Coupon */
+    .coupon-row {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+    }
+
+    .coupon-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+      padding: 9px 12px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.78rem;
+      background: #fff;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .coupon-input:focus { border-color: var(--dark-green); }
+
+    .coupon-btn {
+      padding: 9px 14px;
+      background: var(--dark-green);
+      color: #fff;
+      border: none;
+      border-radius: 0 4px 4px 0;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .coupon-btn:hover { background: var(--mid-green); }
+
+    .coupon-msg {
+      font-size: 0.72rem;
+      margin-top: 6px;
+      min-height: 14px;
+    }
+
+    .coupon-msg.ok  { color: var(--light-green); }
+    .coupon-msg.err { color: #c0392b; }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--dark-green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary:hover { background: var(--mid-green); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: var(--text-dark);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--dark-green);
+      background: var(--warm-white);
+    }
+
+    /* Help box */
+    .help-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .help-box:hover { border-color: var(--dark-green); }
+
+    .help-box-text h4 {
+      font-size: 0.83rem;
+      font-weight: 400;
+      margin-bottom: 3px;
+    }
+
+    .help-box-text p {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      display: none;
+    }
+
+    .empty-state svg { color: var(--text-light); margin-bottom: 16px; }
+    .empty-state h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+    .empty-state p { font-size: 0.82rem; color: var(--text-light); margin-bottom: 24px; }
+    .empty-state a {
+      display: inline-block;
+      padding: 12px 28px;
+      background: var(--dark-green);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      main { padding: 32px 20px 48px; }
+      .cart-layout { grid-template-columns: 1fr; }
+      .summary-col { order: -1; }
+    }
+
+    @media (max-width: 560px) {
+      .rec-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav></nav>
+
+<!-- MAIN -->
+<main>
+  <h1 class="page-title">Seu Carrinho</h1>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="empty-state">
+    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <h3>Seu carrinho está vazio</h3>
+    <p>Adicione plantas e arranjos para continuar.</p>
+    <a href="catalogo.html">Ver catálogo</a>
+  </div>
+
+  <div class="cart-layout" id="cart-layout">
+    <!-- LEFT COL -->
+    <div>
+      <div class="cart-items" id="cart-items">
+        <!-- rendered by JS -->
+      </div>
+
+      <!-- RECOMMENDED -->
+      <div class="recommended">
+        <h2>Você também pode gostar</h2>
+        <div class="rec-grid">
+          <div class="rec-card" onclick="openProduct(3)">
+            <div class="rec-card-img">
+              <img src="resources/images/f0d31b0b3237e0a5a88f2f86ca38bd6e.jpg" alt="Begônia maculata" />
+            </div>
+            <p class="rec-card-name">Begônia maculata</p>
+            <p class="rec-card-price">R$ 150,00</p>
+          </div>
+          <div class="rec-card" onclick="openProduct(1)">
+            <div class="rec-card-img">
+              <img src="resources/images/8754e248f99b5927f030bced0a93fb36.jpg" alt="Pacova" />
+            </div>
+            <p class="rec-card-name">Pacova</p>
+            <p class="rec-card-price">R$ 99,99</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COL -->
+    <div class="summary-col">
+      <!-- Summary box -->
+      <div class="summary-box">
+        <h3>Resumo do Pedido</h3>
+
+        <!-- Coupon -->
+        <div class="coupon-row">
+          <input class="coupon-input" type="text" id="coupon-input" placeholder="Código de desconto" />
+          <button class="coupon-btn" onclick="applyCoupon()">Aplicar</button>
+        </div>
+        <p class="coupon-msg" id="coupon-msg"></p>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal-val">R$ 434,00</span>
+        </div>
+        <div class="summary-row discount" id="discount-row" style="display:none">
+          <span id="discount-label">Desconto (FLORA10)</span>
+          <span id="discount-val">- R$ 43,40</span>
+        </div>
+
+        <hr class="summary-divider" />
+
+        <div class="summary-total">
+          <span>Total</span>
+          <span id="total-val">R$ 434,00</span>
+        </div>
+
+        <button class="btn-primary" onclick="checkout()">
+          Finalizar Pedido
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <button class="btn-secondary" onclick="window.location.href='catalogo.html'">Continuar Comprando</button>
+      </div>
+
+      <!-- Help -->
+      <div class="help-box" onclick="alert('Atendimento em breve!')">
+        <div class="help-box-text">
+          <h4>Precisa de ajuda?</h4>
+          <p>Fale com um consultor floral</p>
+        </div>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer></footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- COMPONENTES GLOBAIS -->
+<script src="components.js"></script>
+
+<script>
+  /* ── STATE ── */
+  function loadCart() {
+    try {
+      const raw = localStorage.getItem('cart');
+      const items = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(items)) return [];
+
+      // Suporta formatos antigos (qty) e atual (quantity)
+      return items
+        .filter((i) => i && typeof i === 'object')
+        .map((i) => ({
+          id: i.id,
+          name: i.name,
+          category: i.category || '—',
+          price: Number(i.price) || 0,
+          quantity: Math.max(1, Number(i.quantity ?? i.qty ?? 1) || 1),
+          img: i.img || ''
+        }))
+        .filter((i) => i.id != null);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveCart() {
+    const toSave = cart.map((i) => ({
+      id: i.id,
+      name: i.name,
+      category: i.category,
+      price: i.price,
+      img: i.img,
+      quantity: i.quantity
+    }));
+    localStorage.setItem('cart', JSON.stringify(toSave));
+  }
+
+  let cart = loadCart();
+
+  let discountPct = 0;
+  let discountCode = '';
+
+  const COUPONS = { 'FLORA10': 10, 'VERDE15': 15, 'PLANTA20': 20 };
+
+  /* ── RENDER ── */
+  function fmt(n) {
+    return 'R$ ' + n.toFixed(2).replace('.', ',');
+  }
+
+  function render() {
+    const container = document.getElementById('cart-items');
+    const layout    = document.getElementById('cart-layout');
+    const empty     = document.getElementById('empty-state');
+    const badge     = document.getElementById('nav-badge');
+
+    const totalQty = cart.reduce((s, i) => s + (i.quantity || 0), 0);
+    if (badge) badge.textContent = totalQty;
+
+    if (cart.length === 0) {
+      layout.style.display = 'none';
+      empty.style.display  = 'block';
+      return;
+    }
+
+    layout.style.display = '';
+    empty.style.display  = 'none';
+
+    container.innerHTML = cart.map(item => `
+      <div class="cart-item" id="item-${item.id}">
+        <div class="cart-item-img">
+          <img src="${item.img}" alt="${item.name}" />
+        </div>
+        <div class="cart-item-info">
+          <p class="cart-item-name">${item.name}</p>
+          <p class="cart-item-category">${item.category}</p>
+        </div>
+        <div class="cart-item-right">
+          <span class="cart-item-price">${fmt(item.price * item.quantity)}</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(${item.id}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <span class="qty-value">${item.quantity}</span>
+            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${item.id})">Remover</button>
+        </div>
+      </div>
+    `).join('');
+
+    updateSummary();
+    saveCart();
+  }
+
+  function updateSummary() {
+    const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    const discount = subtotal * (discountPct / 100);
+    const total    = subtotal - discount;
+
+    document.getElementById('subtotal-val').textContent = fmt(subtotal);
+
+    const discRow = document.getElementById('discount-row');
+    if (discountPct > 0) {
+      discRow.style.display = 'flex';
+      document.getElementById('discount-label').textContent = `Desconto (${discountCode})`;
+      document.getElementById('discount-val').textContent   = `- ${fmt(discount)}`;
+    } else {
+      discRow.style.display = 'none';
+    }
+
+    document.getElementById('total-val').textContent = fmt(total);
+  }
+
+  /* ── ACTIONS ── */
+  function changeQty(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+    item.quantity = Math.max(1, item.quantity + delta);
+    render();
+  }
+
+  function removeItem(id) {
+    const el = document.getElementById(`item-${id}`);
+    if (el) {
+      el.style.transition = 'opacity 0.3s, transform 0.3s';
+      el.style.opacity    = '0';
+      el.style.transform  = 'translateX(20px)';
+      setTimeout(() => {
+        cart = cart.filter(i => i.id !== id);
+        render();
+      }, 300);
+    }
+  }
+
+  function applyCoupon() {
+    const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+    const msg  = document.getElementById('coupon-msg');
+
+    if (COUPONS[code]) {
+      discountPct  = COUPONS[code];
+      discountCode = code;
+      msg.textContent = `Cupom "${code}" aplicado! ${discountPct}% de desconto.`;
+      msg.className   = 'coupon-msg ok';
+      updateSummary();
+    } else {
+      msg.textContent = 'Cupom inválido ou expirado.';
+      msg.className   = 'coupon-msg err';
+    }
+  }
+
+  function openProduct(id) {
+    window.location.href = `produto.html?id=${id}`;
+  }
+
+  function checkout() {
+    if (typeof window.showToast === 'function') {
+      window.showToast('Redirecionando para o pagamento…');
+    }
+    setTimeout(() => alert('Checkout em breve! 🌿'), 1200);
+  }
+
+  /* Allow Enter on coupon field */
+  document.getElementById('coupon-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyCoupon();
+  });
+
+  /* Init */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', render);
+  } else {
+    render();
+  }
+</script>
+</body>
+</html>

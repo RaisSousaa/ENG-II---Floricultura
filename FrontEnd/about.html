@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre Nós — Ateliê Verdanza</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles-global.css" />
+  <style>
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 380px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--dark-green), var(--mid-green));
+    }
+
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 48px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 500px;
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+
+    /* ── SEÇÕES ── */
+    .section {
+      padding: 80px 64px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 48px;
+      text-align: center;
+    }
+
+    /* ── HISTÓRIA ── */
+    .history-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .history-text h3 {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+    }
+
+    .history-text p {
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .history-image {
+      width: 100%;
+      aspect-ratio: 4/5;
+      background: linear-gradient(135deg, var(--cream) 0%, var(--border) 100%);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .history-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── VALORES ── */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .value-card {
+      padding: 32px;
+      background: var(--cream);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .value-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .value-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+
+    .value-card p {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
+    /* ── PROCESSO ── */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .process-step {
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--dark-green);
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .process-step h4 {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .process-step p {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      line-height: 1.5;
+    }
+
+    /* ── EQUIPE ── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+    }
+
+    .team-member {
+      text-align: center;
+    }
+
+    .member-image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--mid-green) 100%);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 3rem;
+    }
+
+    .member-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .team-member h4 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .team-member p {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+    }
+
+    .team-member-bio {
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--dark-green);
+      color: #fff;
+      padding: 64px 48px;
+      text-align: center;
+      border-radius: 12px;
+      margin-top: 80px;
+    }
+
+    .cta-section h2 {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .cta-section p {
+      font-size: 1rem;
+      opacity: 0.95;
+      margin-bottom: 32px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-cta {
+      display: inline-block;
+      padding: 14px 48px;
+      background: #fff;
+      color: var(--dark-green);
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    /* ── RESPONSIVO ── */
+    @media (max-width: 900px) {
+      .section {
+        padding: 60px 32px;
+      }
+
+      .history-layout {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .process-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .hero {
+        height: 300px;
+      }
+
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+
+      .hero p {
+        font-size: 0.95rem;
+      }
+
+      .section {
+        padding: 40px 16px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 32px;
+      }
+
+      .process-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-section {
+        padding: 40px 24px;
+      }
+
+      .cta-section h2 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav></nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Sobre Ateliê Verdanza</h1>
+    <p>Cultivando beleza e harmonia através da arte botânica desde 2019</p>
+  </div>
+</section>
+
+<!-- HISTÓRIA -->
+<section class="section">
+  <div class="history-layout">
+    <div class="history-text">
+      <h3>Nossa Jornada</h3>
+      <p>
+        Ateliê Verdanza nasceu de uma paixão genuína pela natureza e pelo desejo de trazer a beleza das plantas para dentro das casas e escritórios das pessoas.
+      </p>
+      <p>
+        Fundada em 2019, começamos com uma pequena coleção de plantas selecionadas à mão. Desde então, crescemos mantendo nossa filosofia central: qualidade acima de quantidade, e um genuíno cuidado com o bem-estar de cada exemplar.
+      </p>
+      <p>
+        Cada planta que deixa nossa loja é cuidadosamente inspecionada para garantir que chegará ao seu novo lar em perfeitas condições, pronta para prosperar por muitos anos.
+      </p>
+    </div>
+    <div class="history-image">
+      <img src="resources/images/f78a6c2b62aa7a7b92a41e8faeaa3733.jpg" alt="Fundadora do Ateliê Verdanza" />
+    </div>
+  </div>
+</section>
+
+<!-- VALORES -->
+<section class="section">
+  <h2 class="section-title">Nossos Valores</h2>
+  <div class="values-grid">
+    <div class="value-card">
+      <div class="value-icon">🌱</div>
+      <h3>Sustentabilidade</h3>
+      <p>
+        Comprometidos com práticas ecologicamente responsáveis em cada aspecto do nosso negócio.
+      </p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">💚</div>
+      <h3>Cuidado</h3>
+      <p>
+        Cada planta recebe atenção individualizada e é cultivada com dedicação e amor.
+      </p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🎨</div>
+      <h3>Estética</h3>
+      <p>
+        Acreditamos que a beleza botânica deve ser acessível e elevar o espaço de todos.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section class="section">
+  <h2 class="section-title">Como Trabalhamos</h2>
+  <div class="process-grid">
+    <div class="process-step">
+      <div class="step-number">1</div>
+      <h4>Seleção</h4>
+      <p>Escolhemos apenas as melhores espécies, com genética saudável e vigor excepcional.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">2</div>
+      <h4>Cultivo</h4>
+      <p>Cultivadas em ambiente controlado com luz, umidade e nutrientes ideais.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">3</div>
+      <h4>Inspeção</h4>
+      <p>Cada exemplar é minuciosamente verificado antes de deixar nosso ateliê.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">4</div>
+      <h4>Entrega</h4>
+      <p>Embalagem cuidadosa e entrega rápida para garantir frescor e saúde.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer></footer>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- COMPONENTES GLOBAIS -->
+<script src="components.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro — Ateliê Verdanza</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-global.css" />
+
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --warm-white: #faf7f2;
+      --dark-green: #1e2c1a;
+      --mid-green: #3a5435;
+      --light-green: #6b8f5e;
+      --text-dark: #2a2a22;
+      --text-mid: #5a5a4a;
+      --text-light: #8a8a7a;
+      --border: #d8d0c0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Jost', sans-serif;
+      background: var(--warm-white);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      font-weight: 300;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 24px;
+    }
+
+    /* ── CARD ── */
+    .register-card {
+      width: 100%;
+      max-width: 430px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 40px 40px;
+      position: relative;
+      animation: cardIn 0.55s ease both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ornament */
+    .flower-ornament {
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      width: 64px;
+      height: 64px;
+      border: 1px solid var(--border);
+      border-top-right-radius: 12px;
+      border-bottom-left-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .flower-ornament svg {
+      width: 36px;
+      height: 36px;
+      color: var(--text-light);
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-right: 32px;
+    }
+
+    .register-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .register-header p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    /* ── FORM ── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 0;
+      outline: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--text-dark);
+      background: transparent;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-bottom-color: var(--dark-green);
+    }
+
+    input::placeholder {
+      color: var(--border);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background: var(--dark-green);
+      color: #fff;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.25s, transform 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: var(--mid-green);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .card-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    .login-area {
+      text-align: center;
+    }
+
+    .login-area p {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-bottom: 14px;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--text-mid);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-dark);
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--dark-green);
+      background: var(--cream);
+    }
+
+    @media (max-width: 680px) {
+      nav { padding: 0 20px; }
+      main { padding: 40px 16px; }
+      .register-card { padding: 36px 24px 32px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV (GLOBAL) -->
+  <nav></nav>
+
+  <!-- MAIN -->
+  <main>
+    <section class="register-card">
+      <div class="flower-ornament" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="24" cy="14" rx="5" ry="9" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(0 24 24)"/>
+          <ellipse cx="24" cy="14" rx="5" ry="9" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(60 24 24)"/>
+          <ellipse cx="24" cy="14" rx="5" ry="9" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(120 24 24)"/>
+          <ellipse cx="24" cy="14" rx="5" ry="9" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(180 24 24)"/>
+          <ellipse cx="24" cy="14" rx="5" ry="9" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(240 24 24)"/>
+          <ellipse cx="24" cy="14" rx="5" ry="9" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(300 24 24)"/>
+          <circle cx="24" cy="24" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+
+      <div class="register-header">
+        <h1>Criar conta</h1>
+        <p>Preencha seus dados para continuar</p>
+      </div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name">NOME</label>
+          <input type="text" id="name" name="name" placeholder="Seu nome" autocomplete="name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-MAIL</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">SENHA</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="new-password" required />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">CONFIRMAR</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" autocomplete="new-password" required />
+          </div>
+        </div>
+
+        <button class="btn-primary" type="submit">Cadastrar</button>
+      </form>
+
+      <hr class="card-divider" />
+
+      <div class="login-area">
+        <p>Já possui uma conta?</p>
+        <button class="btn-secondary" type="button" onclick="window.location.href='login.html'">Ir para login</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER (GLOBAL) -->
+  <footer></footer>
+
+  <script src="components.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cadastro.js"></script>
+ </body>
+ </html>
