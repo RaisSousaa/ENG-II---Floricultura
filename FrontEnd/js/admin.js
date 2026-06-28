@@ -554,6 +554,7 @@ function showSection(name) {
     produtos: 0,
     pedidos: 1,
     clientes: 2,
+    db: 3,
   };
 
   const navItems = document.querySelectorAll(".nav-item");
@@ -566,6 +567,8 @@ function showSection(name) {
     renderAllOrders();
   } else if (name === "clientes") {
     renderClients();
+  } else if (name === "db") {
+    initDbExplorer();
   }
 }
 
@@ -620,3 +623,439 @@ document.addEventListener("DOMContentLoaded", function () {
 
   verificarAcessoAdmin();
 });
+
+// ==========================================
+// ── EXPLORADOR DO BANCO DE DADOS ──
+// ==========================================
+let activeDbTable = null;
+let activeDbTab = "data";
+let dbTablesList = [];
+let dbTablePage = 1;
+let dbTableLimit = 15;
+let dbTableSortBy = null;
+let dbTableSortOrder = "asc";
+
+async function initDbExplorer() {
+  await loadDbTables();
+  if (dbTablesList.length > 0 && !activeDbTable) {
+    selectDbTable(dbTablesList[0].name);
+  }
+}
+
+async function loadDbTables() {
+  try {
+    const data = await apiRequest("/admin/db/tables");
+    dbTablesList = data;
+    renderDbTablesList();
+  } catch (error) {
+    console.error("Erro ao carregar tabelas:", error);
+    showToast("Erro ao carregar tabelas: " + error.message);
+  }
+}
+
+function renderDbTablesList() {
+  const container = document.getElementById("db-table-list");
+  if (!container) return;
+  
+  if (dbTablesList.length === 0) {
+    container.innerHTML = `<div style="font-size:0.8rem;color:var(--text-light);text-align:center;padding:20px 0;">Nenhuma tabela encontrada.</div>`;
+    return;
+  }
+  
+  container.innerHTML = dbTablesList.map(table => {
+    const isActive = activeDbTable === table.name ? "active" : "";
+    return `
+      <button class="db-table-item ${isActive}" onclick="selectDbTable('${table.name}')">
+        <span>📦 ${table.name}</span>
+        <span class="row-badge">${table.rows}</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function selectDbTable(tableName) {
+  activeDbTable = tableName;
+  renderDbTablesList();
+  
+  // Reset search and sorting parameters when changing tables
+  dbTablePage = 1;
+  dbTableSortBy = null;
+  dbTableSortOrder = "asc";
+  document.getElementById("db-search-val").value = "";
+  
+  // Show containers
+  document.getElementById("db-data-controls").style.display = "block";
+  document.getElementById("db-data-empty-state").style.display = "none";
+  document.getElementById("db-schema-container").style.display = "block";
+  document.getElementById("db-schema-empty-state").style.display = "none";
+  
+  // Load data for active tab
+  loadActiveTabContent();
+}
+
+function loadActiveTabContent() {
+  if (!activeDbTable) return;
+  
+  if (activeDbTab === "data") {
+    loadTableData(activeDbTable, dbTablePage);
+  } else if (activeDbTab === "schema") {
+    loadTableSchema(activeDbTable);
+  } else if (activeDbTab === "diagram") {
+    renderDbSchemaDiagram();
+  }
+}
+
+function switchDbTab(tabName) {
+  activeDbTab = tabName;
+  
+  // Update tab buttons
+  document.querySelectorAll(".db-tab-btn").forEach(btn => {
+    btn.classList.remove("active");
+    if (btn.getAttribute("onclick").includes(tabName)) {
+      btn.classList.add("active");
+    }
+  });
+  
+  // Update tab panes
+  document.querySelectorAll(".db-panel-pane").forEach(pane => {
+    pane.classList.remove("active");
+  });
+  const activePane = document.getElementById(`db-pane-${tabName}`);
+  if (activePane) {
+    activePane.classList.add("active");
+  }
+  
+  loadActiveTabContent();
+}
+
+async function loadTableData(tableName, page = 1) {
+  dbTablePage = page;
+  const searchCol = document.getElementById("db-search-col").value;
+  const searchVal = document.getElementById("db-search-val").value;
+  
+  let endpoint = `/admin/db/tables/${tableName}/data?page=${page}&limit=${dbTableLimit}`;
+  if (searchCol && searchVal) {
+    endpoint += `&search_col=${encodeURIComponent(searchCol)}&search_val=${encodeURIComponent(searchVal)}`;
+  }
+  if (dbTableSortBy) {
+    endpoint += `&sort_by=${encodeURIComponent(dbTableSortBy)}&sort_order=${dbTableSortOrder}`;
+  }
+  
+  const container = document.getElementById("db-data-table-container");
+  container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-light);">Carregando dados...</div>`;
+  
+  try {
+    const data = await apiRequest(endpoint);
+    
+    // Fill search columns list if empty or changed
+    const searchColSelect = document.getElementById("db-search-col");
+    const currentVal = searchColSelect.value;
+    searchColSelect.innerHTML = data.columns.map(col => `<option value="${col}">${col}</option>`).join("");
+    if (data.columns.includes(currentVal)) {
+      searchColSelect.value = currentVal;
+    }
+    
+    if (data.rows.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-light);">Nenhum registro encontrado nesta tabela.</div>`;
+      document.getElementById("db-data-pagination").innerHTML = "";
+      return;
+    }
+    
+    // Render table
+    let tableHtml = `<table><thead><tr>`;
+    data.columns.forEach(col => {
+      const isSorted = dbTableSortBy === col;
+      const arrow = isSorted ? (dbTableSortOrder === "asc" ? " ▴" : " ▾") : "";
+      tableHtml += `
+        <th style="cursor:pointer;" onclick="toggleSortDbTable('${col}')">
+          ${col}${arrow}
+        </th>
+      `;
+    });
+    tableHtml += `</tr></thead><tbody>`;
+    
+    data.rows.forEach(row => {
+      tableHtml += `<tr>`;
+      data.columns.forEach(col => {
+        let val = row[col];
+        if (val === null) {
+          val = `<span style="color:var(--text-light);font-style:italic;">NULL</span>`;
+        } else if (typeof val === "boolean") {
+          val = val ? `<span style="color:#2e7d32;font-weight:500;">TRUE</span>` : `<span style="color:#c62828;font-weight:500;">FALSE</span>`;
+        } else {
+          // Escape HTML
+          val = String(val).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        tableHtml += `<td title="${String(row[col] || '')}">${val}</td>`;
+      });
+      tableHtml += `</tr>`;
+    });
+    
+    tableHtml += `</tbody></table>`;
+    container.innerHTML = tableHtml;
+    
+    // Render pagination
+    renderDbPagination(data.total, page);
+    
+  } catch (error) {
+    console.error("Erro ao carregar dados:", error);
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828;">Erro ao carregar dados: ${error.message}</div>`;
+  }
+}
+
+function toggleSortDbTable(column) {
+  if (dbTableSortBy === column) {
+    dbTableSortOrder = dbTableSortOrder === "asc" ? "desc" : "asc";
+  } else {
+    dbTableSortBy = column;
+    dbTableSortOrder = "asc";
+  }
+  loadTableData(activeDbTable, dbTablePage);
+}
+
+function clearDbSearch() {
+  document.getElementById("db-search-val").value = "";
+  loadTableData(activeDbTable, 1);
+}
+
+function renderDbPagination(total, currentPage) {
+  const paginationContainer = document.getElementById("db-data-pagination");
+  if (!paginationContainer) return;
+  
+  const totalPages = Math.ceil(total / dbTableLimit);
+  const startIdx = (currentPage - 1) * dbTableLimit + 1;
+  const endIdx = Math.min(currentPage * dbTableLimit, total);
+  
+  let html = `<div>Exibindo ${startIdx}-${endIdx} de ${total} registros</div>`;
+  html += `<div class="pagination-btns">`;
+  html += `
+    <button class="pagination-btn" ${currentPage === 1 ? "disabled" : ""} onclick="loadTableData(activeDbTable, ${currentPage - 1})">
+      Anterior
+    </button>
+  `;
+  html += `
+    <span style="align-self:center;margin:0 10px;">Página ${currentPage} de ${totalPages}</span>
+  `;
+  html += `
+    <button class="pagination-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="loadTableData(activeDbTable, ${currentPage + 1})">
+      Próxima
+    </button>
+  `;
+  html += `</div>`;
+  
+  paginationContainer.innerHTML = html;
+}
+
+async function loadTableSchema(tableName) {
+  const container = document.getElementById("db-schema-fields");
+  container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-light);">Carregando esquema...</div>`;
+  
+  try {
+    const data = await apiRequest(`/admin/db/tables/${tableName}/schema`);
+    document.getElementById("db-schema-title").textContent = `Estrutura da Tabela: ${tableName}`;
+    
+    if (data.columns.length === 0) {
+      container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-light);">Nenhum campo encontrado.</div>`;
+      return;
+    }
+    
+    container.innerHTML = data.columns.map(col => {
+      let badges = [];
+      if (col.primary_key) {
+        badges.push(`<span class="badge-pk" title="Chave Primária">PK</span>`);
+      }
+      
+      // Check if it's a foreign key
+      const fk = data.foreign_keys.find(f => f.constrained_columns.includes(col.name));
+      if (fk) {
+        const referredTable = fk.referred_table;
+        const referredCol = fk.referred_columns[0];
+        badges.push(`<span class="badge-fk" title="Chave Estrangeira referente a ${referredTable}(${referredCol})">FK ➔ ${referredTable}</span>`);
+      }
+      
+      return `
+        <div class="schema-card">
+          <h4>
+            <span>${col.name}</span>
+            <div style="display:flex;gap:4px;">${badges.join(" ")}</div>
+          </h4>
+          <div class="schema-details">
+            <div>
+              <strong>Tipo:</strong>
+              <span>${col.type}</span>
+            </div>
+            <div>
+              <strong>Nulo:</strong>
+              <span>${col.nullable ? "Sim" : "Não"}</span>
+            </div>
+            <div>
+              <strong>Padrão:</strong>
+              <span>${col.default !== null ? col.default : '<span style="color:var(--text-light);font-style:italic;">nenhum</span>'}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    
+  } catch (error) {
+    console.error("Erro ao carregar esquema:", error);
+    container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#c62828;">Erro ao carregar esquema: ${error.message}</div>`;
+  }
+}
+
+function setSqlQuery(query) {
+  document.getElementById("sql-query-input").value = query;
+}
+
+async function executeSqlQuery() {
+  const query = document.getElementById("sql-query-input").value.trim();
+  if (!query) {
+    showToast("Por favor, digite uma consulta SQL.");
+    return;
+  }
+  
+  const resultsContainer = document.getElementById("sql-results-container");
+  const metaText = document.getElementById("sql-results-meta");
+  const tableContainer = document.getElementById("sql-results-table-container");
+  
+  resultsContainer.style.display = "block";
+  metaText.textContent = "Executando consulta...";
+  tableContainer.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-light);">Processando requisição...</div>`;
+  
+  const startTime = Date.now();
+  
+  try {
+    const result = await apiRequest("/admin/db/query", {
+      method: "POST",
+      body: JSON.stringify({ query })
+    });
+    
+    const duration = ((Date.now() - startTime) / 1000).toFixed(3);
+    
+    if (result.success && result.columns && result.rows) {
+      metaText.innerHTML = `<span style="color:#2e7d32;font-weight:500;">✓ Sucesso:</span> ${result.count} linhas retornadas em ${duration} segundos.`;
+      
+      if (result.rows.length === 0) {
+        tableContainer.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-light);">A consulta foi bem sucedida, mas não retornou nenhuma linha.</div>`;
+        return;
+      }
+      
+      // Render SQL result table
+      let tableHtml = `<table><thead><tr>`;
+      result.columns.forEach(col => {
+        tableHtml += `<th>${col}</th>`;
+      });
+      tableHtml += `</tr></thead><tbody>`;
+      
+      result.rows.forEach(row => {
+        tableHtml += `<tr>`;
+        result.columns.forEach(col => {
+          let val = row[col];
+          if (val === null) {
+            val = `<span style="color:var(--text-light);font-style:italic;">NULL</span>`;
+          } else if (typeof val === "boolean") {
+            val = val ? "TRUE" : "FALSE";
+          } else {
+            val = String(val).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          }
+          tableHtml += `<td title="${String(row[col] || '')}">${val}</td>`;
+        });
+        tableHtml += `</tr>`;
+      });
+      
+      tableHtml += `</tbody></table>`;
+      tableContainer.innerHTML = tableHtml;
+    } else {
+      metaText.innerHTML = `<span style="color:#c62828;font-weight:500;">⚠ Executado:</span> ${result.message || 'Comando finalizado.'} (Tempo: ${duration}s)`;
+      tableContainer.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-mid);">${result.message || 'Sem retorno de dados.'}</div>`;
+      loadDbTables();
+    }
+  } catch (error) {
+    const duration = ((Date.now() - startTime) / 1000).toFixed(3);
+    metaText.innerHTML = `<span style="color:#c62828;font-weight:500;">✕ Erro:</span> Falha ao executar consulta em ${duration}s.`;
+    tableContainer.innerHTML = `<div style="padding:20px;background:#ffebee;color:#c62828;border-radius:6px;font-family:monospace;font-size:0.85rem;white-space:pre-wrap;border:1px solid #ffcdd2;">${error.message}</div>`;
+  }
+}
+
+function renderDbSchemaDiagram() {
+  const container = document.getElementById("diagram-nodes");
+  if (!container) return;
+  
+  const tableData = [
+    {
+      name: "users",
+      fields: [
+        { name: "id", type: "INTEGER", pk: true },
+        { name: "name", type: "VARCHAR(120)" },
+        { name: "email", type: "VARCHAR(120)" },
+        { name: "password_hash", type: "VARCHAR(255)" },
+        { name: "is_admin", type: "BOOLEAN" }
+      ]
+    },
+    {
+      name: "products",
+      fields: [
+        { name: "id", type: "INTEGER", pk: true },
+        { name: "name", type: "VARCHAR(120)" },
+        { name: "description", type: "TEXT" },
+        { name: "price", type: "FLOAT" },
+        { name: "image", type: "TEXT" },
+        { name: "category", type: "VARCHAR(80)" },
+        { name: "stock", type: "INTEGER" }
+      ]
+    },
+    {
+      name: "orders",
+      fields: [
+        { name: "id", type: "INTEGER", pk: true },
+        { name: "user_id", type: "INTEGER", fk: "users(id)" },
+        { name: "total_price", type: "FLOAT" },
+        { name: "discount", type: "FLOAT" },
+        { name: "status", type: "VARCHAR(50)" },
+        { name: "created_at", type: "DATETIME" }
+      ]
+    },
+    {
+      name: "order_items",
+      fields: [
+        { name: "id", type: "INTEGER", pk: true },
+        { name: "order_id", type: "INTEGER", fk: "orders(id)" },
+        { name: "product_id", type: "INTEGER", fk: "products(id)" },
+        { name: "quantity", type: "INTEGER" },
+        { name: "price", type: "FLOAT" }
+      ]
+    }
+  ];
+
+  container.innerHTML = tableData.map(tbl => {
+    return `
+      <div class="diagram-node" style="${activeDbTable === tbl.name ? 'border-color: var(--dark-green); box-shadow: 0 0 12px rgba(30, 44, 26, 0.2);' : ''}">
+        <div class="diagram-node-header" style="${activeDbTable === tbl.name ? 'background: var(--dark-green);' : ''}">
+          📦 ${tbl.name}
+        </div>
+        <div class="diagram-node-fields">
+          ${tbl.fields.map(fld => {
+            let cls = "";
+            let badge = "";
+            if (fld.pk) {
+              cls = "pk";
+              badge = `<span style="font-size:0.6rem;color:#c38b27;font-weight:600;">🔑 PK</span>`;
+            } else if (fld.fk) {
+              cls = "fk";
+              badge = `<span style="font-size:0.6rem;color:#316ba8;font-weight:600;" title="Ref: ${fld.fk}">🔗 FK</span>`;
+            }
+            return `
+              <div class="diagram-node-field ${cls}">
+                <span>${fld.name}</span>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <span style="font-size:0.65rem;color:var(--text-light);">${fld.type}</span>
+                  ${badge}
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
