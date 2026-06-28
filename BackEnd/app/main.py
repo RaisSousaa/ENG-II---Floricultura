@@ -1,9 +1,9 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from app.seed import create_admin_user
+from app.seed import create_admin_user, seed_products
 
-from app.database import create_tables, get_db, SessionLocal, User, Product
+from app.database import create_tables, get_db, SessionLocal, User, Product, Order, OrderItem
 from app.schemas import (
     UserCreate,
     UserLogin,
@@ -11,6 +11,10 @@ from app.schemas import (
     ProductCreate,
     ProductUpdate,
     ProductResponse,
+    OrderCreate,
+    OrderResponse,
+    OrderStatusUpdate,
+    ClientResponse,
 )
 from app.security import (
     hash_password,
@@ -45,6 +49,7 @@ def startup():
     db = SessionLocal()
     try:
         create_admin_user(db)
+        seed_products(db)
     finally:
         db.close()
 
@@ -249,4 +254,155 @@ def delete_product(
     db.commit()
 
     return {"message": "Produto removido com sucesso"}
+
+
+@api.post("/orders", response_model=OrderResponse)
+def create_order(
+    order_data: OrderCreate,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    current_user = get_current_user(request, db)
+
+    # 1. Verify items & stock, calculate totals
+    new_order = Order(
+        user_id=current_user.id,
+        total_price=order_data.total_price,
+        discount=order_data.discount,
+        status="pendente",
+    )
+    db.add(new_order)
+    db.flush()  # gets new_order.id
+
+    total_qty = 0
+    for item in order_data.items:
+        product = db.query(Product).filter(Product.id == item.product_id).first()
+        if not product:
+            db.rollback()
+            raise HTTPException(status_code=404, detail=f"Produto ID {item.product_id} não encontrado")
+
+        if product.stock < item.quantity:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=f"Estoque insuficiente para o produto {product.name}")
+
+        # Deduct stock
+        product.stock -= item.quantity
+        total_qty += item.quantity
+
+        order_item = OrderItem(
+            order_id=new_order.id,
+            product_id=product.id,
+            quantity=item.quantity,
+            price=item.price
+        )
+        db.add(order_item)
+
+    db.commit()
+    db.refresh(new_order)
+
+    # Return response matching OrderResponse
+    return {
+        "id": new_order.id,
+        "user_id": new_order.user_id,
+        "client_name": current_user.name,
+        "total_price": new_order.total_price,
+        "discount": new_order.discount,
+        "status": new_order.status,
+        "created_at": new_order.created_at.strftime("%d/%m/%Y %H:%M"),
+        "items_count": total_qty
+    }
+
+
+@api.get("/orders", response_model=list[OrderResponse])
+def get_orders(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    current_user = get_current_user(request, db)
+
+    if current_user.is_admin:
+        orders = db.query(Order).order_by(Order.created_at.desc()).all()
+    else:
+        orders = db.query(Order).filter(Order.user_id == current_user.id).order_by(Order.created_at.desc()).all()
+
+    response = []
+    for order in orders:
+        items_count = sum(item.quantity for item in order.items)
+        response.append({
+            "id": order.id,
+            "user_id": order.user_id,
+            "client_name": order.user.name,
+            "total_price": order.total_price,
+            "discount": order.discount,
+            "status": order.status,
+            "created_at": order.created_at.strftime("%d/%m/%Y %H:%M"),
+            "items_count": items_count
+        })
+    return response
+
+
+@api.put("/orders/{order_id}/status", response_model=OrderResponse)
+def update_order_status(
+    order_id: int,
+    status_data: OrderStatusUpdate,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    require_admin(request, db)
+
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+    order.status = status_data.status
+    db.commit()
+    db.refresh(order)
+
+    items_count = sum(item.quantity for item in order.items)
+    return {
+        "id": order.id,
+        "user_id": order.user_id,
+        "client_name": order.user.name,
+        "total_price": order.total_price,
+        "discount": order.discount,
+        "status": order.status,
+        "created_at": order.created_at.strftime("%d/%m/%Y %H:%M"),
+        "items_count": items_count
+    }
+
+
+@api.get("/clients", response_model=list[ClientResponse])
+def get_clients(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    require_admin(request, db)
+
+    # Get users who are not admins
+    clients = db.query(User).filter(User.is_admin == False).all()
+
+    response = []
+    for client in clients:
+        # Calculate stats
+        client_orders = db.query(Order).filter(Order.user_id == client.id).all()
+        orders_count = len(client_orders)
+        total_spent = sum(order.total_price for order in client_orders)
+
+        last_purchase_str = None
+        if client_orders:
+            # Get latest order
+            latest_order = max(client_orders, key=lambda o: o.created_at)
+            last_purchase_str = latest_order.created_at.strftime("%d/%m/%Y")
+
+        response.append({
+            "name": client.name,
+            "email": client.email,
+            "orders_count": orders_count,
+            "total_spent": total_spent,
+            "last_purchase": last_purchase_str
+        })
+
+    return response
+
+
 app.include_router(api)

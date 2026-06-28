@@ -532,6 +532,7 @@
 <div class="toast" id="toast"></div>
 
 <!-- COMPONENTES GLOBAIS -->
+<script src="js/api.js"></script>
 <script src="components.js"></script>
 
 <script>
@@ -696,11 +697,67 @@
     window.location.href = `produto.html?id=${id}`;
   }
 
-  function checkout() {
-    if (typeof window.showToast === 'function') {
-      window.showToast('Redirecionando para o pagamento…');
+  async function checkout() {
+    try {
+      let user = null;
+      try {
+        user = await apiRequest("/auth/profile");
+      } catch (e) {
+        // Not logged in
+      }
+
+      if (!user) {
+        alert("Você precisa fazer login para finalizar o pedido.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert("Seu carrinho está vazio.");
+        return;
+      }
+
+      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      const discount = subtotal * (discountPct / 100);
+      const total = subtotal - discount;
+
+      const orderItems = cart.map(item => ({
+        product_id: Number(item.id),
+        quantity: Number(item.quantity),
+        price: Number(item.price)
+      }));
+
+      const payload = {
+        items: orderItems,
+        discount: discount,
+        total_price: total
+      };
+
+      if (typeof window.showToast === 'function') {
+        window.showToast('Processando pedido…');
+      }
+
+      const result = await apiRequest("/orders", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      console.log("Pedido finalizado com sucesso:", result);
+      alert(`Pedido finalizado com sucesso! ID: ${result.id}. Obrigado! 🌿`);
+
+      // Limpar carrinho
+      cart = [];
+      saveCart();
+      if (typeof updateCartCount === 'function') {
+        updateCartCount();
+      }
+
+      window.location.href = "index.html";
+
+    } catch (error) {
+      console.error("Erro ao finalizar pedido:", error);
+      alert("Erro ao finalizar pedido: " + error.message);
     }
-    setTimeout(() => alert('Checkout em breve! 🌿'), 1200);
   }
 
   /* Allow Enter on coupon field */

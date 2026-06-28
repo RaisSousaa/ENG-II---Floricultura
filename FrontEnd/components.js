@@ -31,6 +31,69 @@ function renderNav() {
   `;
 }
 
+async function checkAuthNav() {
+  try {
+    const user = await apiRequest("/auth/profile");
+    if (user) {
+      const navActions = document.querySelector(".nav-actions");
+      if (navActions) {
+        const accountBtn = navActions.querySelector('button[title="Conta"]');
+        if (accountBtn) {
+          accountBtn.outerHTML = `
+            <div class="user-menu-container" style="position: relative; display: inline-block;">
+              <button class="nav-icon user-menu-btn" title="Conta (${user.name})" onclick="toggleUserMenu()" style="display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: inherit; padding: 0;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span class="user-nav-name" style="font-size: 0.8rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400;">${user.name.split(' ')[0]}</span>
+              </button>
+              <div id="user-dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 140px; padding: 8px 0; margin-top: 8px;">
+                ${user.is_admin ? '<a href="admin.html" style="display: block; padding: 8px 16px; text-decoration: none; color: var(--text-dark); font-size: 0.8rem; text-align: left; font-family: \'Jost\', sans-serif;">Painel Admin</a>' : ''}
+                <button onclick="logoutUser()" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 16px; color: #c0392b; font-size: 0.8rem; cursor: pointer; font-family: \'Jost\', sans-serif;">Sair</button>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
+  } catch (e) {
+    // Not logged in or error, keep default
+  }
+}
+
+function toggleUserMenu() {
+  const menu = document.getElementById("user-dropdown-menu");
+  if (menu) {
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+  }
+}
+
+async function logoutUser() {
+  try {
+    await apiRequest("/auth/logout", { method: "POST" });
+    if (typeof showToast === 'function') {
+      showToast("Até logo!");
+    } else {
+      alert("Até logo!");
+    }
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 800);
+  } catch (error) {
+    console.error("Erro ao fazer logout:", error);
+    window.location.href = "login.html";
+  }
+}
+
+// Close user dropdown if clicking outside
+document.addEventListener("click", function(event) {
+  const container = document.querySelector(".user-menu-container");
+  const menu = document.getElementById("user-dropdown-menu");
+  if (container && menu && !container.contains(event.target)) {
+    menu.style.display = "none";
+  }
+});
+
 /**
  * Renderiza o footer/Rodapé
  */
@@ -120,6 +183,9 @@ function createToastElement() {
 function initComponents() {
   renderNav();
   renderFooter();
+  if (typeof apiRequest === 'function') {
+    checkAuthNav();
+  }
 }
 
 // Auto-inicializar quando o DOM estiver pronto

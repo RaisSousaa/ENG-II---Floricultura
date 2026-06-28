@@ -403,6 +403,23 @@
     const loginForm = document.getElementById("login-form");
     const loginButton = document.getElementById("login-btn");
 
+    // Redireciona se já estiver logado
+    async function checkExistingSession() {
+      try {
+        const user = await apiRequest("/auth/profile");
+        if (user) {
+          if (user.is_admin) {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "index.html";
+          }
+        }
+      } catch (e) {
+        // Não está logado, permanece na página
+      }
+    }
+    checkExistingSession();
+
     loginForm.addEventListener("submit", async function (event) {
       event.preventDefault();
 

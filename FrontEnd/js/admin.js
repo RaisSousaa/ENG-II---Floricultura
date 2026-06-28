@@ -4,18 +4,121 @@ let products = [];
 let deleteTarget = null;
 let editingProductId = null;
 
-const orders = [
-  { id: "#ORD-9022", client: "Beatriz Silveira", items: 2, total: "R$ 264,00", status: "pendente" },
-  { id: "#ORD-9018", client: "Henrique Costa", items: 1, total: "R$ 89,00", status: "enviado" },
-  { id: "#ORD-8995", client: "Mariana Luz", items: 3, total: "R$ 412,00", status: "entregue" },
-  { id: "#ORD-8981", client: "Carlos Mendes", items: 1, total: "R$ 189,00", status: "entregue" },
-];
+let orders = [];
+let clients = [];
 
 const orderStatusBadge = {
-  pendente: '<span class="status-badge status-pendente">Pendente ˅</span>',
-  enviado: '<span class="status-badge status-enviado">Pronto para Retirada ˅</span>',
+  pendente: '<span class="status-badge status-pendente">Pendente</span>',
+  enviado: '<span class="status-badge status-enviado">Pronto para Retirada</span>',
   entregue: '<span class="status-badge status-entregue">Entregue</span>',
 };
+
+function renderOrderStatusSelect(order) {
+  if (order.status === 'entregue') {
+    return `<span class="status-badge status-entregue">Entregue</span>`;
+  }
+  const options = [
+    { value: 'pendente', label: 'Pendente' },
+    { value: 'enviado', label: 'Pronto para Retirada' },
+    { value: 'entregue', label: 'Entregue' }
+  ];
+  return `
+    <select class="status-badge status-${order.status}" onchange="changeOrderStatus(${order.dbId}, this.value)" style="border: none; font-family: inherit; font-size: 0.72rem; font-weight: inherit; cursor: pointer; outline: none; padding: 4px 8px; border-radius: 12px; background: transparent; color: inherit;">
+      ${options.map(opt => `<option value="${opt.value}" ${order.status === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('')}
+    </select>
+  `;
+}
+
+async function changeOrderStatus(dbId, status) {
+  try {
+    await apiRequest(`/orders/${dbId}/status`, {
+      method: "PUT",
+      body: JSON.stringify({ status })
+    });
+    showToast("Status do pedido atualizado com sucesso!");
+    await carregarPedidosAdmin();
+    renderAllOrders();
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error);
+    showToast("Erro ao atualizar status: " + error.message);
+  }
+}
+
+async function carregarPedidosAdmin() {
+  try {
+    const data = await apiRequest("/orders");
+    orders = data.map(order => ({
+      id: `#ORD-${order.id}`,
+      dbId: order.id,
+      client: order.client_name,
+      items: order.items_count,
+      total: `R$ ${order.total_price.toFixed(2).replace(".", ",")}`,
+      status: order.status
+    }));
+    renderRecentOrders();
+    updateOrderDashboardStats();
+  } catch (error) {
+    console.error("Erro ao carregar pedidos:", error);
+    showToast("Erro ao carregar pedidos: " + error.message);
+  }
+}
+
+function updateOrderDashboardStats() {
+  const totalOrdersEl = document.getElementById("stats-total-orders");
+  const pendingOrdersEl = document.getElementById("stats-pending-orders");
+  const totalRevenueEl = document.getElementById("stats-total-revenue");
+
+  if (!totalOrdersEl || !pendingOrdersEl || !totalRevenueEl) return;
+
+  const totalOrders = orders.length;
+  const pendingOrders = orders.filter(o => o.status === "pendente").length;
+  
+  const revenue = orders.reduce((sum, order) => {
+    const num = Number(order.total.replace("R$", "").replace(/\./g, "").replace(",", ".").trim());
+    return sum + (isNaN(num) ? 0 : num);
+  }, 0);
+
+  totalOrdersEl.textContent = totalOrders;
+  pendingOrdersEl.textContent = pendingOrders;
+  totalRevenueEl.textContent = `R$ ${revenue.toFixed(2).replace(".", ",")}`;
+}
+
+async function carregarClientesAdmin() {
+  try {
+    const data = await apiRequest("/clients");
+    clients = data;
+    renderClients();
+  } catch (error) {
+    console.error("Erro ao carregar clientes:", error);
+    showToast("Erro ao carregar clientes: " + error.message);
+  }
+}
+
+function renderClients() {
+  const tbody = document.getElementById("clients-tbody");
+  if (!tbody) return;
+
+  if (clients.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center;padding:24px;color:var(--text-light);font-size:.82rem;">
+          Nenhum cliente cadastrado.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = clients.map(client => `
+    <tr>
+      <td>${client.name}</td>
+      <td>${client.email}</td>
+      <td>${client.orders_count}</td>
+      <td>R$ ${client.total_spent.toFixed(2).replace(".", ",")}</td>
+      <td>${client.last_purchase || '—'}</td>
+    </tr>
+  `).join("");
+}
 
 function getProductStatus(product) {
   const stock = Number(product.stock || 0);
@@ -46,7 +149,8 @@ async function verificarAcessoAdmin() {
     }
 
     await carregarProdutosAdmin();
-    renderRecentOrders();
+    await carregarPedidosAdmin();
+    await carregarClientesAdmin();
 
   } catch (error) {
     console.error("Erro ao verificar admin:", error);
@@ -336,7 +440,7 @@ function renderRecentOrders() {
           ${order.items} ${order.items === 1 ? "Item" : "Itens"} • ${order.total}
         </span>
 
-        ${orderStatusBadge[order.status]}
+        ${renderOrderStatusSelect(order)}
       </div>
     </div>
   `).join("");
@@ -353,9 +457,9 @@ function renderAllOrders() {
       <td>${order.client}</td>
       <td>${order.items}</td>
       <td>${order.total}</td>
-      <td>${orderStatusBadge[order.status]}</td>
+      <td>${renderOrderStatusSelect(order)}</td>
       <td>
-        <button class="action-btn" title="Ver detalhes">
+        <button class="action-btn" title="Ver detalhes" onclick="alert('Detalhes do pedido:\\nID: ${order.id}\\nCliente: ${order.client}\\nTotal: ${order.total}\\nItens: ${order.items}')">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
@@ -395,6 +499,8 @@ function showSection(name) {
 
   if (name === "pedidos") {
     renderAllOrders();
+  } else if (name === "clientes") {
+    renderClients();
   }
 }
 

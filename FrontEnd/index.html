@@ -665,98 +665,8 @@
     </div>
 
     <div class="products-carousel">
-      <div class="product-grid">
-
-        <div class="product-card" onclick="openProduct(4)">
-          <div class="product-card-img">
-            <img src="resources/images/90b89e249c82e6dc5cbd5a1f773eaf8c.jpg" alt="Suculenta" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 4,
-              name: 'Suculenta',
-              category: 'Plantas',
-              price: 319.90,
-              img: 'resources/images/90b89e249c82e6dc5cbd5a1f773eaf8c.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Suculenta</span>
-            <span class="product-price">R$ 319,90</span>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="openProduct(1)">
-          <div class="product-card-img">
-            <img src="resources/images/8754e248f99b5927f030bced0a93fb36.jpg" alt="Pacova" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 1,
-              name: 'Pacova',
-              category: 'Plantas',
-              price: 99.99,
-              img: 'resources/images/8754e248f99b5927f030bced0a93fb36.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Pacova</span>
-            <span class="product-price">R$ 99,99</span>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="openProduct(3)">
-          <div class="product-card-img">
-            <img src="resources/images/f0d31b0b3237e0a5a88f2f86ca38bd6e.jpg" alt="Begônia maculata" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 3,
-              name: 'Begônia maculata',
-              category: 'Plantas',
-              price: 150.00,
-              img: 'resources/images/f0d31b0b3237e0a5a88f2f86ca38bd6e.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Begônia maculata</span>
-            <span class="product-price">R$ 150,00</span>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="openProduct(2)">
-          <div class="product-card-img">
-            <img src="resources/images/d4354dd73462954ef4c1cdf9c8e30fc1.jpg" alt="Filodendro coração" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 2,
-              name: 'Filodendro coração',
-              category: 'Plantas',
-              price: 85.00,
-              img: 'resources/images/d4354dd73462954ef4c1cdf9c8e30fc1.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Filodendro coração</span>
-            <span class="product-price">R$ 85,00</span>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="openProduct(5)">
-          <div class="product-card-img">
-            <img src="resources/images/3968616e5c964b6cc39dd69bde188030.jpg" alt="Samambaia" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 5,
-              name: 'Samambaia',
-              category: 'Plantas',
-              price: 200.00,
-              img: 'resources/images/3968616e5c964b6cc39dd69bde188030.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Samambaia</span>
-            <span class="product-price">R$ 200,00</span>
-          </div>
-        </div>
-
+      <div class="product-grid" id="plants-grid">
+        <!-- Rendered dynamically from DB -->
       </div>
 
       <button class="carousel-arrow" type="button">›</button>
@@ -772,98 +682,8 @@
     </div>
 
     <div class="products-carousel">
-      <div class="product-grid">
-
-<div class="product-card fade-up delay-1" onclick="openProduct(10)">
-          <div class="product-card-img">
-            <img src="resources/images/arranjo1.jpg" alt="Arranjo floral" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 10,
-              name: 'Arranjo floral',
-              category: 'Flores',
-              price: 150.00,
-              img: 'resources/images/arranjo1.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Arranjo floral</span>
-            <span class="product-price">R$ 150,00</span>
-          </div>
-        </div>
-
-        <div class="product-card fade-up delay-2" onclick="openProduct(13)">
-          <div class="product-card-img">
-            <img src="resources/images/arranjo2.jpg" alt="Arranjo floral especial" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 13,
-              name: 'Arranjo floral especial',
-              category: 'Flores',
-              price: 200.00,
-              img: 'resources/images/arranjo2.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Arranjo floral especial</span>
-            <span class="product-price">R$ 200,00</span>
-          </div>
-        </div>
-
-        <div class="product-card fade-up delay-3" onclick="openProduct(14)">
-          <div class="product-card-img">
-            <img src="resources/images/arranjo3.jpg" alt="Mini arranjo floral" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 14,
-              name: 'Mini arranjo floral',
-              category: 'Flores',
-              price: 50.00,
-              img: 'resources/images/arranjo3.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Mini arranjo floral</span>
-            <span class="product-price">R$ 50,00</span>
-          </div>
-        </div>
-
-        <div class="product-card fade-up delay-1" onclick="openProduct(15)">
-          <div class="product-card-img">
-            <img src="resources/images/c2d8170ae288ab2c850477e66be1a755.jpg" alt="Arranjo floral delicado" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 15,
-              name: 'Arranjo floral delicado',
-              category: 'Flores',
-              price: 120.00,
-              img: 'resources/images/c2d8170ae288ab2c850477e66be1a755.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Arranjo floral delicado</span>
-            <span class="product-price">R$ 120,00</span>
-          </div>
-        </div>
-
-        <div class="product-card fade-up delay-2" onclick="openProduct(12)">
-          <div class="product-card-img">
-            <img src="resources/images/e35b38f27e82e78c62aca35e0fc73204.jpg" alt="Arranjo floral premium" />
-            <button class="add-btn" onclick="addHomeProductToCart(event, {
-              id: 12,
-              name: 'Arranjo floral premium',
-              category: 'Flores',
-              price: 250.00,
-              img: 'resources/images/e35b38f27e82e78c62aca35e0fc73204.jpg'
-            })">+</button>
-          </div>
-
-          <div class="product-info">
-            <span class="product-name">Arranjo floral premium</span>
-            <span class="product-price">R$ 250,00</span>
-          </div>
-        </div>
-
+      <div class="product-grid" id="arrangements-grid">
+        <!-- Rendered dynamically from DB -->
       </div>
 
       <button class="carousel-arrow" type="button">›</button>
@@ -925,6 +745,7 @@
   <div class="toast" id="toast"></div>
 
   <!-- COMPONENTES GLOBAIS -->
+  <script src="js/api.js"></script>
   <script src="components.js"></script>
 
   <script>
@@ -932,53 +753,121 @@
       window.location.href = `produto.html?id=${id}`;
     }
 
-  function addHomeProductToCart(event, product) {
-    event.stopPropagation();
+    function addHomeProductToCart(event, product) {
+      event.stopPropagation();
 
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existingItem = cart.find(item => String(item.id) === String(product.id));
 
-    const existingItem = cart.find(item => String(item.id) === String(product.id));
+      if (existingItem) {
+        existingItem.quantity = Number(existingItem.quantity || 1) + 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name || 'Produto sem nome',
+          category: product.category || '—',
+          price: Number(product.price || 0),
+          img: product.img || '',
+          quantity: 1
+        });
+      }
 
-    if (existingItem) {
-      existingItem.quantity = Number(existingItem.quantity || 1) + 1;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name || 'Produto sem nome',
-        category: product.category || '—',
-        price: Number(product.price || 0),
-        img: product.img || '',
-        quantity: 1
+      localStorage.setItem('cart', JSON.stringify(cart));
+
+      if (typeof updateCartCount === 'function') {
+        updateCartCount();
+      }
+
+      if (typeof showToast === 'function') {
+        showToast(`"${product.name}" adicionado ao carrinho!`);
+      } else {
+        alert(`"${product.name}" adicionado ao carrinho!`);
+      }
+    }
+
+    function initObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.product-card, .section-header').forEach((element) => {
+        element.style.opacity = '0';
+        element.style.animation = 'fadeUp 0.55s ease forwards paused';
+        observer.observe(element);
       });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    async function loadHomeProducts() {
+      try {
+        const products = await apiRequest("/products");
 
-    if (typeof updateCartCount === 'function') {
-      updateCartCount();
-    }
-
-    if (typeof showToast === 'function') {
-      showToast(`"${product.name}" adicionado ao carrinho!`);
-    } else {
-      alert(`"${product.name}" adicionado ao carrinho!`);
-    }
-  }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.style.animationPlayState = 'running';
-          observer.unobserve(entry.target);
+        // 1. Renderizar Plantas
+        const plantsGrid = document.getElementById("plants-grid");
+        if (plantsGrid) {
+          const plants = products.filter(p => p.category === "Plantas").slice(0, 5);
+          if (plants.length > 0) {
+            plantsGrid.innerHTML = plants.map(product => `
+              <div class="product-card" onclick="openProduct(${product.id})">
+                <div class="product-card-img">
+                  <img src="${product.image || 'resources/images/arranjo1.jpg'}" alt="${product.name}" />
+                  <button class="add-btn" onclick="addHomeProductToCart(event, {
+                    id: ${product.id},
+                    name: '${product.name.replace(/'/g, "\\'")}',
+                    category: '${(product.category || 'Plantas').replace(/'/g, "\\'")}',
+                    price: ${product.price},
+                    img: '${(product.image || 'resources/images/arranjo1.jpg').replace(/'/g, "\\'")}'
+                  })">+</button>
+                </div>
+                <div class="product-info">
+                  <span class="product-name">${product.name}</span>
+                  <span class="product-price">R$ ${product.price.toFixed(2).replace(".", ",")}</span>
+                </div>
+              </div>
+            `).join("");
+          }
         }
-      });
-    }, { threshold: 0.12 });
 
-    document.querySelectorAll('.product-card, .section-header').forEach((element) => {
-      element.style.opacity = '0';
-      element.style.animation = 'fadeUp 0.55s ease forwards paused';
-      observer.observe(element);
-    });
+        // 2. Renderizar Arranjos
+        const arrangementsGrid = document.getElementById("arrangements-grid");
+        if (arrangementsGrid) {
+          const arrangements = products.filter(p => p.category !== "Plantas").slice(0, 5);
+          if (arrangements.length > 0) {
+            arrangementsGrid.innerHTML = arrangements.map(product => `
+              <div class="product-card" onclick="openProduct(${product.id})">
+                <div class="product-card-img">
+                  <img src="${product.image || 'resources/images/arranjo1.jpg'}" alt="${product.name}" />
+                  <button class="add-btn" onclick="addHomeProductToCart(event, {
+                    id: ${product.id},
+                    name: '${product.name.replace(/'/g, "\\'")}',
+                    category: '${(product.category || 'Flores').replace(/'/g, "\\'")}',
+                    price: ${product.price},
+                    img: '${(product.image || 'resources/images/arranjo1.jpg').replace(/'/g, "\\'")}'
+                  })">+</button>
+                </div>
+                <div class="product-info">
+                  <span class="product-name">${product.name}</span>
+                  <span class="product-price">R$ ${product.price.toFixed(2).replace(".", ",")}</span>
+                </div>
+              </div>
+            `).join("");
+          }
+        }
+
+        // Inicializar animações
+        initObserver();
+
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
+        initObserver();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadHomeProducts);
   </script>
 
 </body>

@@ -1,3 +1,20 @@
+// Redireciona se já estiver logado
+async function checkExistingSession() {
+  try {
+    const user = await apiRequest("/auth/profile");
+    if (user) {
+      if (user.is_admin) {
+        window.location.href = "admin.html";
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+  } catch (e) {
+    // Não está logado
+  }
+}
+checkExistingSession();
+
 const cadastroForm = document.getElementById("registerForm") || document.querySelector("form");
 
 if (cadastroForm) cadastroForm.addEventListener("submit", handleRegister);

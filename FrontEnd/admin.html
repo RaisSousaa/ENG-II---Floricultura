@@ -842,15 +842,15 @@
       <div class="stats-row">
         <div class="stat-card">
           <p class="stat-label">Total de Pedidos</p>
-          <p class="stat-value">42</p>
+          <p class="stat-value" id="stats-total-orders">0</p>
         </div>
         <div class="stat-card">
           <p class="stat-label">Pendentes</p>
-          <p class="stat-value">1</p>
+          <p class="stat-value" id="stats-pending-orders">0</p>
         </div>
         <div class="stat-card">
-          <p class="stat-label">Receita (mês)</p>
-          <p class="stat-value">R$ 8.240</p>
+          <p class="stat-label">Receita</p>
+          <p class="stat-value" id="stats-total-revenue">R$ 0,00</p>
         </div>
       </div>
 
@@ -895,35 +895,8 @@
               <th>Última compra</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Beatriz Silveira</td>
-              <td>beatriz@email.com</td>
-              <td>4</td>
-              <td>R$ 980,00</td>
-              <td>12/05/2024</td>
-            </tr>
-            <tr>
-              <td>Henrique Costa</td>
-              <td>henrique@email.com</td>
-              <td>2</td>
-              <td>R$ 318,00</td>
-              <td>10/05/2024</td>
-            </tr>
-            <tr>
-              <td>Mariana Luz</td>
-              <td>mariana@email.com</td>
-              <td>6</td>
-              <td>R$ 1.420,00</td>
-              <td>14/05/2024</td>
-            </tr>
-            <tr>
-              <td>Carlos Mendes</td>
-              <td>carlos@email.com</td>
-              <td>1</td>
-              <td>R$ 189,00</td>
-              <td>08/05/2024</td>
-            </tr>
+          <tbody id="clients-tbody">
+            <!-- rendered dynamically from API -->
           </tbody>
         </table>
       </div>
