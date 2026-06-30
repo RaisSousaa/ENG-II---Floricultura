@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, Text, Bool
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 
+#conexão com o banco de dados
 DATABASE_URL = "postgresql://verdanza_user:12345678@localhost:5432/verdanza"
 
 engine = create_engine(DATABASE_URL)

@@ -301,7 +301,6 @@ def create_order(
     db.commit()
     db.refresh(new_order)
 
-    # Return response matching OrderResponse
     return {
         "id": new_order.id,
         "user_id": new_order.user_id,

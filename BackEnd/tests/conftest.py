@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-# Importa os módulos para fazer monkeypatch/override de variáveis globais
 import app.main
 import app.database
 from app.database import Base, User, Product, Order, OrderItem
@@ -12,7 +11,6 @@ from app.database import Base, User, Product, Order, OrderItem
 # Importa a instância do FastAPI com um alias para evitar sombreamento com o pacote 'app'
 from app.main import app as fastapi_app
 
-# Engine SQLite em memória para isolar os testes com StaticPool
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
