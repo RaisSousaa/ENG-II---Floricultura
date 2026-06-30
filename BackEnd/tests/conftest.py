@@ -8,7 +8,6 @@ import app.main
 import app.database
 from app.database import Base, User, Product, Order, OrderItem
 
-# Importa a instância do FastAPI com um alias para evitar sombreamento com o pacote 'app'
 from app.main import app as fastapi_app
 
 from sqlalchemy import event
@@ -47,7 +46,6 @@ def db():
 
 @pytest.fixture(scope="function")
 def client(db):
-    # Sobrescreve a dependência get_db do FastAPI para utilizar a sessão de testes
     def override_get_db():
         try:
             yield db
